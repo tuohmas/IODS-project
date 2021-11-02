@@ -1,13 +1,14 @@
+---
+title: "About the project"
+author: "Tuomas Heikkilä (UH)"
+date: "Nov 2, 2021"
+output: html_document
+---
 
 # About the project
 
-*Write a short description about the course and add a link to your GitHub repository here. This is an R Markdown (.Rmd) file so you should use R Markdown syntax.*
+My name is **Tuomas Heikkilä**. I am a Phd student in Media and Communication studies at University of Helsinki, working primarily with social media datasets and computational social sciences methods, that command fluency in API querying, web scraping, data wrangling, data visualization and (light) statistical analaysis  - all skills this course can hopefully help me with.
 
-```{r}
-# This is a so-called "R chunk" where you can write R code.
+I am especially looking forward to kickstarting my R skills, having already some experience with python. 
 
-date()
-
-```
-The text continues here.
-
+You can find [my GitHub repository here](https://tuohmas.github.io/IODS-project/).
