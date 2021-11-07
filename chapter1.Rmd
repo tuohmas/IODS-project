@@ -11,4 +11,4 @@ My name is **Tuomas Heikkilä**. I am a Phd student in Media and Communication s
 
 I am especially looking forward to kickstarting my R skills, having already some experience with python. 
 
-You can find [my GitHub repository here](https://tuohmas.github.io/IODS-project/).
+You can find [my GitHub repository here](https://github.com/tuohmas/IODS-project).
