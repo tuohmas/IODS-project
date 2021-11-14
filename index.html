@@ -305,8 +305,8 @@ summary(my_model1)</code></pre>
 ## Residual standard error: 5.296 on 162 degrees of freedom
 ## Multiple R-squared:  0.2074, Adjusted R-squared:  0.1927 
 ## F-statistic: 14.13 on 3 and 162 DF,  p-value: 3.156e-08</code></pre>
-<p>From the summary we see that. From explanatory variables only <em>attitude</em> easily passes null-hypothesis test with alpha-level 0.5 (<span class="math inline">\(p &lt; 1.93×10^{-8}\)</span>), whereas <em>stra</em> and <em>surf</em> can be readily excluded as statistically not significant.</p>
-<p>Let’s go back and fix the model so that it only has statistically significant explanatory variables, namely the <em>attitude</em>:</p>
+<p>From the summary we see that explanatory variable <em>attitude</em> passes null-hypothesis test with flying colors (<span class="math inline">\(p &lt; 1.93×10^{-8}\)</span>). However, <em>stra</em> and <em>surf</em> variables should be excluded from our model, as neither of their beta coefficents – that quantifies the relationship between the target variable and the explanatory variable – is statistically significantly different from zero, indicating no relationship with our preferred risk-level 0.05.</p>
+<p>Let’s go back and fix the model so that only statistically significant explanatory variables, namely the <em>attitude</em>, are included, and interpret the summary.</p>
 <pre class="r"><code>my_model2 &lt;- lm(points ~ attitude, data = learning2014)
 summary(my_model2)</code></pre>
 <pre><code>## 
@@ -335,17 +335,17 @@ summary(my_model2)</code></pre>
 <li><span class="math inline">\(\alpha\)</span> is a constant parameter that (visualised as the point where regression line intersects the y axis); and</li>
 <li><span class="math inline">\(\epsilon\)</span> is an unobservable random variable that estimates the error (residual) inherent in the model.</li>
 </ul>
-<p>With that, let’s explain the summary table:</p>
+<p>With that in mind, let’s see what our summary table holds.</p>
 <ul>
 <li>Estimate of the constant parameter is positive and quite high (<span class="math inline">\(\alpha = 11.63\)</span>), with very high certainty of being non-zero (<span class="math inline">\(p &lt; 1.95×10^{-9}\)</span>)</li>
 <li>Estimated effect of attitude is positive (<span class="math inline">\(\beta=0.352\)</span>). From associated <em>F</em>-test we can determine that the beta coefficient is significantly different from zero (<span class="math inline">\(p &lt; 4.12×10^{-9}\)</span>), pointing to statistically very significant relationship between <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span>.</li>
 <li>Based on a <em>F</em>-test, our model explains a significant amount of variance in the outcome variable, with very low risk level (<span class="math inline">\(F(1, 164) = 38.61, p &lt; 4.12×10^{-9}\)</span>)</li>
 <li>Multiple <span class="math inline">\(R^{2}\)</span> tells us that 19.1% of the variation in exam points can be explained by our attitude variable.</li>
 </ul>
-<p>Finally, let’s explore how well our fitted model satisfies the core assumptions of linear regression model.</p>
 </div>
 <div id="diagnostics-how-well-does-our-model-satisfy-the-core-assumptions-of-linear-regression-analysis" class="section level2">
 <h2>Diagnostics: how well does our model satisfy the core assumptions of linear regression analysis?</h2>
+<p>Finally, let’s explore how well our fitted model satisfies the core assumptions of linear regression model.</p>
 <p>To assess our model further, let’s finally run three diagnostic plots:</p>
 <ul>
 <li><strong>Residuals vs Fitted</strong> allows us to explore the assumption that model errors are not dependent on explanatory variables.</li>
