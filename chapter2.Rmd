@@ -70,10 +70,10 @@ my_model1 <- lm(points ~ attitude + stra + surf, data = learning2014)
 summary(my_model1)
 ```
 
-From the summary we see that. From explanatory variables only _attitude_ easily passes null-hypothesis test with alpha-level 0.5 ($p < 1.93×10^{-8}$), whereas 
-_stra_ and _surf_ can be readily excluded as statistically not significant.
+From the summary we see that explanatory variable _attitude_ passes null-hypothesis test with flying colors ($p < 1.93×10^{-8}$). However, 
+_stra_ and _surf_ variables should be excluded from our model, as neither of their beta coefficents – that quantifies the relationship between the target variable and the explanatory variable – is statistically significantly different from zero, indicating no relationship with our preferred risk-level 0.05.
 
-Let's go back and fix the model so that it only has statistically significant explanatory variables, namely the _attitude_:
+Let's go back and fix the model so that only  statistically significant explanatory variables, namely the _attitude_, are included, and interpret the summary.
 
 ```{r}
 my_model2 <- lm(points ~ attitude, data = learning2014)
@@ -88,16 +88,16 @@ Let's remind ourselves that we are modelling exam points with simple linear equa
 * $\alpha$ is a constant parameter that (visualised as the point where regression line intersects the y axis); and 
 * $\epsilon$ is an unobservable random variable that estimates the error (residual) inherent in the model. 
 
-With that, let's explain the summary table:
+With that in mind, let's see what our summary table holds.
 
 * Estimate of the constant parameter is positive and quite high ($\alpha = 11.63$), with very high certainty of being non-zero ($p < 1.95×10^{-9}$)
 * Estimated effect of attitude is positive ($\beta=0.352$). From associated _F_-test we can determine that the beta coefficient is significantly different from zero ($p < 4.12×10^{-9}$), pointing to statistically very significant relationship between $y$ and $x$.
 * Based on a _F_-test, our model explains a significant amount of variance in the outcome variable, with very low risk level ($F(1, 164) = 38.61,  p < 4.12×10^{-9}$)
 * Multiple $R^{2}$ tells us that 19.1% of the variation in exam points can be explained by our attitude variable.
 
-Finally, let's explore how well our fitted model satisfies the core assumptions of linear regression model.
-
 ## Diagnostics: how well does our model satisfy the core assumptions of linear regression analysis? 
+
+Finally, let's explore how well our fitted model satisfies the core assumptions of linear regression model.
 
 To assess our model further, let's finally run three diagnostic plots:
 
