@@ -1,6 +1,6 @@
 # Exercise 2, Week 2: Regression and model validation
 
-This week, we are working with learning2014 dataset. For a detailed descrption, [see the data code book](https://www.mv.helsinki.fi/home/kvehkala/JYTmooc/JYTOPKYS2-meta.txt) (in Finnish)
+This week, we are working with student questionaire ("learning2014" dataset), exploring the teaching and learning on introduction to statistics in social sciences course at University of Helsinki in 2014. For a detailed description about the dataset, [pleaset see the data code book](https://www.mv.helsinki.fi/home/kvehkala/JYTmooc/JYTOPKYS2-meta.txt) (in Finnish)
 
 We will base our analysis on four original variables and three sum variables:
 
@@ -14,29 +14,28 @@ We will base our analysis on four original variables and three sum variables:
 | stra | A sum variable for *strategic learning* that consists of  "SU02","SU10","SU18","SU26", "SU05","SU13","SU21","SU29","SU08","SU16","SU24", and "SU32" (see codebook above) |
 | surf | A sum variable for *surface learning* that consists of "ST01","ST09","ST17","ST25","ST04","ST12","ST20", and "ST28" (see codebook above) |
 
+Let us begin by reading learning data csv file – prepared earlier – as a data.frame from repo:
 
-Let us begin by reading learning data as data.frame from local directory:
+```{r message=FALSE}
+library(tidyverse)
 
-```{r}
-lrn14 <- read.csv("~/R/IODS-project/data/learning2014.csv")
-learning2014 <- data.frame(lrn14)
+learning2014 <- read.table("https://raw.githubusercontent.com/tuohmas/IODS-project/master/data/learning2014.csv",
+                           sep = ",", header = TRUE)
+glimpse(learning2014)
 ```
 
 To get a handle of our variables, we will plot attitude against exam points as a scatter plot, and use gender as an aesthetic element. Finally, let's add a regression line layer with 95% confidence interval:
 
-```{r}
-# Load gglot2 library
+```{r message=FALSE}
 library(ggplot2)
 
 # initialize plot with data and aesthetic mapping
 plot <- ggplot(learning2014, aes(x = attitude, y = points, col = gender)) +
   geom_point() +# define the visualization type (points) 
   geom_smooth(method = "lm") + # add a regression line
-
   # add a main title and draw the plot
   ggtitle("Student's attitude versus exam points") 
 
-# plot the result
 plot
 ```
 
@@ -48,8 +47,9 @@ Now we can begin to work with a regression model that would predict student exam
 
 Let's consider pearson correlations between our variables. Visually, this is neatly done with a plot matrix using a ggpairs() function, available with GGally library.
  
-```{r}
+```{r message=FALSE}
 library(GGally)
+
 ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
 ```
 
@@ -57,9 +57,9 @@ We might hypothesize that we can predict points as target variables using three 
 
 As the most promising candidates, let's choose the three variables with the highest absolute correlations with points, namely
 
-1. attitude (attitude), Pearson correlation. 0.437;
-2. strategic learning (stra), corr: 0.146; and
-3. surface learning (surf), corr: -0.144
+1. **attitude (var name "attitude")**, Pearson correlation 0.437;
+2. **strategic learning (stra)**, correlation 0.146; and
+3. **surface learning (surf)**, correlation -0.144.
 
 Note that, by convention, correlation sizes under 0.30 might be interpreted as negligible, casting some doubt over our second and third explanatory variables.
 
@@ -70,8 +70,7 @@ my_model1 <- lm(points ~ attitude + stra + surf, data = learning2014)
 summary(my_model1)
 ```
 
-From the summary we see that. From explanatory variables only _attitude_ passes
-null-hypothesis test with alpha-level 0.5 ($p < 1.93×10^{-8}$), whereas 
+From the summary we see that. From explanatory variables only _attitude_ easily passes null-hypothesis test with alpha-level 0.5 ($p < 1.93×10^{-8}$), whereas 
 _stra_ and _surf_ can be readily excluded as statistically not significant.
 
 Let's go back and fix the model so that it only has statistically significant explanatory variables, namely the _attitude_:
@@ -85,33 +84,30 @@ Let's remind ourselves that we are modelling exam points with simple linear equa
 
 * $y$ is the target variable (points),
 * $x$ is explanatory variable (attitude),
-* $\beta$ quantifies the relationship between $y$ and $x$, 
-* $\alpha$ is a constant representig the point where regression line intersects the y axis, and 
+* $\beta$ parameter quantifies the relationship between $y$ and $x$ (visualised as the slope of the regression line), 
+* $\alpha$ is a constant parameter that (visualised as the point where regression line intersects the y axis); and 
 * $\epsilon$ is an unobservable random variable that estimates the error (residual) inherent in the model. 
 
 With that, let's explain the summary table:
 
 * Estimate of the constant parameter is positive and quite high ($\alpha = 11.63$), with very high certainty of being non-zero ($p < 1.95×10^{-9}$)
-* Estimated effect of attitude is positive ($\beta=0.352$). From associated _F_-test we can determine that the beta coefficient is significantly different from zero ($p < 4.12×10^{-9}$), pointing a statistically significant relationship between $y$ and $x$.
+* Estimated effect of attitude is positive ($\beta=0.352$). From associated _F_-test we can determine that the beta coefficient is significantly different from zero ($p < 4.12×10^{-9}$), pointing to statistically very significant relationship between $y$ and $x$.
 * Based on a _F_-test, our model explains a significant amount of variance in the outcome variable, with very low risk level ($F(1, 164) = 38.61,  p < 4.12×10^{-9}$)
 * Multiple $R^{2}$ tells us that 19.1% of the variation in exam points can be explained by our attitude variable.
 
 Finally, let's explore how well our fitted model satisfies the core assumptions of linear regression model.
 
-For this end, lets consider three diagnostic plots:
+## Diagnostics: how well does our model satisfy the core assumptions of linear regression analysis? 
+
+To assess our model further, let's finally run three diagnostic plots:
 
 * **Residuals vs Fitted** allows us to explore the assumption that model errors are not dependent on explanatory variables.
 * **Normal QQ-plot** allows us to explore the assumption that the errors of our model are normally distributed.
 * **Residuals vs Leverage** allows us to explore if our data contains any observations that have exceptionally high impact on our model.
 
-Finally, let's produce a diagnostic plots using the plot() function: Residuals vs Fitted values, Normal QQ-plot and Residuals vs Leverage using the argument which (by passing it a vector c(1, 2, 5) corresponding to the above graphics). 
+We will above plots using the plot() function using the argument which, to which we pass a vector c(1, 2, 5): each integer corresponding to the graphics above. We will also initialize the parameter so that plot appear in more conveniently.
 
 ```{r}
-
-# create a regression model with multiple explanatory variables
-my_model2 <- lm(points ~ attitude, data = learning2014)
-
-# draw diagnostic plots using the plot() function. Choose the plots 1, 2 and 5
 par(mfrow = c(2,2))
 plot(my_model2, which = c(1, 2, 5))
 
