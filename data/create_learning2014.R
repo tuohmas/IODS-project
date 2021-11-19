@@ -7,6 +7,10 @@
 rm(list = ls())
 ls()
 
+lrn14 <- read.csv("https://github.com/tuohmas/IODS-project/blob/master/data/learning2014.csv")
+learning2014 <- data.frame(lrn14)
+learning2014
+
 # Set working directory
 
 setwd("~/R/IODS-project/data")
