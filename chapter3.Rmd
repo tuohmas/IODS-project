@@ -1,4 +1,157 @@
 # Exercise 3, Week 3: Logistic regression
 
-...
+This week, we will be modeling student's alcohol consumption using logistic regression analysis. We will be working with Student Performance Data Set provided by UC Irvine Machine Learning Repository. For a detailed data description, [please see Student Performance Data Set Attribute Information here](https://archive.ics.uci.edu/ml/datasets/Student+Performance).
 
+We have previously merged together participants from Math course (student-math.csv) and Portuguese language course datasets (student-por.csv). We will start with loading the common alc.csv to memory.
+
+```{r message=FALSE}
+library(tidyverse)
+
+alc <- read.table("https://github.com/tuohmas/IODS-project/raw/master/data/alc.csv",
+                           sep = ";", header = TRUE)
+
+glimpse(alc)
+summary(alc)
+```
+
+Glimpsing the dataset, we see that it consist of 370 observations and 33 variables. Median age is 17, (Medu), most common study time between 2 and 5 hours, and, in average, student's weekend alcohol use unsurprisingly exeeds weekday use.
+
+### Data manipulation and graphical overview of alcohol consumption
+
+To further explore students' alchol use, Let's calculate a new sum varibale for overall alcohol use (alc_use) by combining and variables for workday and weekend alcohol consumption (Dalc and Walc, standardized by dividing their sum by two). Dalc and Walc both have Likert-type scale from ranging from 1 to 5 (1 = very low, 5 = very high), and alc_use ranges from 1 to 5 with half integer steps. Let's also calculate a dummy-variable (boolean) for high-alcohol use, that returns TRUE when overall)
+
+Next, let's explore graphically, how alcohol use and heavy alcohol use varies by participant's sex:
+
+```{r}
+# define a new sum variable alc_use for overall alcohol use:
+alc <- mutate(alc, alc_use = (Dalc + Walc) / 2)
+
+# ...and boolean for heavy use (TRUE or FALSE)
+alc <- mutate(alc, high_use = alc_use > 2)
+
+# plot alcohol use by sex as bar chart
+g1 <- ggplot(data = alc, aes(x = alc_use, fill = sex)) +
+geom_bar() # define the plot as a bar plot and draw it
+
+# draw a bar plot of high_use by sex
+g2 <- ggplot(data = alc, aes(x = high_use)) +
+geom_bar() + facet_wrap("sex")
+
+```
+### Logistic regression
+
+We will now use logistic regression to identify factors related to higher than average student alcohol consumption. 
+
+Below I have used the glm() function to fit a logistic regression model with high_use as the target variable and four potential predictors:
+
+* **student's age** (age, interval: from 15 to 22), as it is likely that people consume more alcohol the younger they are (both attending more events where alcohol is used, and coping better with its aftermath, biologically)
+* **student's sex** (sex, binary: M or F), as metabolism and other sex-specific biological systems somewhat determine that can consume more alcohol than women to achieve similar end state.
+* **weekly study time** (studytime, ordinal in approx. hours from less than 2 to more than 10) and **going out with friends** (goout, Likert-type scale from  1 - very low to 5 - very high), as these two measures are somewhat exclusionary, and studying implies not drinking alcohol, while socializing does.
+
+```{r}
+# find the model with glm()
+m <- glm(high_use ~ age + sex + studytime + goout -1, data = alc, family = "binomial")
+
+# print out a summary of the model
+summary(m)
+```
+
+Note that I have removed intercept from the model, so the Wald test has the null-hypothesis that all coefficents are zero, i.e., do not contribute to the model.
+
+From the summary we see that sex, study time and going out all have statistically significant impact on the model. On the other hand, age does not seem to affect alcohol consumption – which we might have guessed, since minimum value (15 yo) is quite young, students' median age is only 17, and maximum (22 yo) is just barely over legal drinking age in the US. 
+
+Excluding age and fit a new model with the rest of the predictors. Besides coefficents, let's also print out their exponents:
+
+```{r}
+# find the model with glm()
+m2 <- glm(high_use ~ sex + studytime + goout -1, data = alc, family = "binomial")
+
+# print out a summary of the model
+summary(m2)
+
+# print out the coefficients of the model
+coef(m2)
+
+# compute odds ratios (OR)
+OR <- coef(m2) %>% exp
+
+# compute confidence intervals (CI)
+CI <- confint(m2) %>% exp
+
+# print out the odds ratios with their confidence intervals
+cbind(OR, CI)
+```
+
+All of our explanatory variable coefficient are now statistically different from zero, some substantially so, and thus contribute to the model. 
+
+* **Belonging to female sex (sexF)** will result in a 2.71 decrease in $logit(p)$ or $log(\frac{p}{1–p})$ of our high alcohol use compared to male counterparts. In terms of odds ratio, conversely, that being a male has a 14% increase in the odds of having high alcohol use (exp(-1.989) = 0.136, CI 95% = [0.021, 0.199]) which is double that of the female students (exp(-2.709) = 0.067, CI 95% = [0.048, 0.367]).
+* Increasing **average weekly study time (studytime)** by few hours also decreases our model prediction by 0.494, as long as other factors remain the same. Translated to percentages, this means that the study time decreases the odds of heavy alcohol use by as much as 61 per cent (exp(-0.494) = 0.136, CI 95% = [0.432, 0.842]).
+* Increasing **the likelihood of going out (goout)** increases our model prediction by 0.748, all other being equal. This variable has a dramatic impact on heavy alcohol use odds that are 111% higher for people who reagurarly go out comapared to non-frequent socializers (exp(0.748) = 2.113, CI 95% = [1.683, 2.691]).
+
+
+### Predicted probabilities and the "confusion matrix"
+
+We will use predict() function to our model (m2) and add it as a variable, then use that variable to predict high alcohol use with 50 % certainty:
+
+```{r}
+# predict() the probability of high_use
+probabilities <- predict(m2, type = "response")
+
+# add the predicted probabilities to 'alc'
+alc <- mutate(alc, probability = probabilities)
+
+# use the probabilities to make a prediction of high_use
+alc <- mutate(alc, prediction = probability > 0.5)
+
+# see the last ten original classes, predicted probabilities, and class predictions
+select(alc, failures, absences, sex, high_use, probability, prediction) %>% tail(10)
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction)
+```
+
+### Models predictive power
+
+We will explore our models's predicit power
+
+```{r message=FALSE}
+# access dplyr and ggplot2
+library(dplyr); library(ggplot2)
+
+# initialize a plot of 'high_use' versus 'probability' in 'alc'
+g <- ggplot(alc, aes(x = probability, y = high_use, col = prediction)) +
+geom_point() # define the geom as points and draw the plot
+g
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table() %>% addmargins()
+```
+
+From the "confusion matrix" see that following proportions of misclassification:
+* in 6.7 % of cases prediction indicates high alcohol use (TRUE) while target variable indicated low-use (FALSE); and
+* in 15.7 % cases prediction indicated low-use while target variable indicates high-use.
+
+### Model accuracy
+
+Calculate our predictive model's accuracy with a loss function:
+
+```{r}
+# define a loss function (average prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+# call loss_func to compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)
+
+# K-fold cross-validation
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m2, K = nrow(alc))
+
+# average number of wrong predictions in the cross validation
+cv$delta[1]
+
+```
+
+Proportion of inaccurately classified individuals in our prediction is some 21 %, which is not great. Still, using simply guesswork would not perform any better, in fact is gives a higher proportion of training errors, almost 27 per cent.
