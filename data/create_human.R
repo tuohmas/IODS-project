@@ -1,6 +1,8 @@
 # Tuomas Heikkilä
 # 2021-11-24
 
+# Data from http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human1.txt
+
 library(tidyverse)
 
 # Read the "Human development" data and assign it to hd
@@ -40,3 +42,92 @@ glimpse(human)
 
 # Save datatable to data folder
 write.table(human, "human.csv", sep = ";", col.names = T, row.names = F)
+
+# CONTINUING WITH THE SCRIPT ON EXERCICE 5 #####################################
+
+library(tidyverse)
+library(stringr)
+
+# Optional: reading previously created human.csv from github
+# human <- read.table(
+  # "https://raw.githubusercontent.com/tuohmas/IODS-project/master/data/human.csv",
+           # header = TRUE, sep = ";")
+
+# Glimpse data and str
+glimpse(human)
+str(human)
+
+# There are 195 observations (countries) and 19 variables
+
+# hdi_rank: ;
+# country: Country;
+# hdi:0 to 1);
+#  : ;
+#  : ;
+#  : ;
+#  gni_per_capita: Gross National Income (GNI) per capita;
+#  : ;
+#  : ;
+#  : ;
+#  : ;
+#  : ;
+#  : ;
+#  : ;
+#  : ;
+
+# the last 4 variables have been calculated by ourselves
+
+# : ;
+# :
+# : ; and
+# : .
+
+
+# GNI per capita column has been stored as a character object due to thousand
+# separator (,)
+str(human$gni_per_capita)
+
+# remove the commas from GNI and print out a numeric version of it
+str_replace(human$gni_per_capita, pattern=",", replace ="") %>% as.numeric()
+
+# Exclude unneeded variables. columns to keep
+keep <- c("country", "edu2_f2m", "lab_f2m", "life_exp_birth", "edu_expected", "gni_per_capita", "mat_mortality", "adol_birth_rate", "repr")
+
+# select the 'keep' columns
+human <- dplyr::select(human, one_of(keep))
+
+# print out a completeness indicator of the 'human' data
+complete.cases(human)
+
+# print out the data along with a completeness indicator as the last column
+human$comp <- complete.cases(human)
+human
+
+# filter out all rows with NA values and remove comp indicator
+human <- filter(human, comp)
+human <- dplyr::select(human, -comp)
+
+# Looking from human tail
+tail(human, n = 8)
+
+# Last 7 rows have been dedicated to regions (and the world) rather than counties
+
+# define the last indice we want to keep
+last <- nrow(human) - 7
+
+# choose everything until the last 7 observations
+human <- human[1:last, ]
+
+# add countries as rownames
+rownames(human) <- human_$Country
+
+# remove the Country variable
+human <- dplyr::select(human, -country)
+
+# explore human structure
+str(human)
+
+# data has 155 observations and 8 variables, as it should.
+
+# overwrite old human csv
+write.table(human, "data/human.csv", sep = ";", row.names = F, col.names = T)
