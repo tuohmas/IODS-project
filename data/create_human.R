@@ -49,9 +49,9 @@ library(tidyverse)
 library(stringr)
 
 # Optional: reading previously created human.csv from github
-# human <- read.table(
-  # "https://raw.githubusercontent.com/tuohmas/IODS-project/master/data/human.csv",
-           # header = TRUE, sep = ";")
+ human <- read.table(
+  "https://raw.githubusercontent.com/tuohmas/IODS-project/master/data/human.csv",
+           header = TRUE, sep = ";")
 
 # Glimpse data and str
 glimpse(human)
@@ -88,7 +88,7 @@ str(human)
 str(human$gni_per_capita)
 
 # remove the commas from GNI and print out a numeric version of it
-str_replace(human$gni_per_capita, pattern=",", replace ="") %>% as.numeric()
+human$gni_per_capita <- str_replace(human$gni_per_capita, pattern=",", replace ="") %>% as.numeric
 
 # Exclude unneeded variables. columns to keep
 keep <- c("country", "edu2_f2m", "lab_f2m", "life_exp_birth", "edu_expected", "gni_per_capita", "mat_mortality", "adol_birth_rate", "repr")
