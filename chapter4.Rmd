@@ -91,9 +91,9 @@ crime <- cut(boston_scaled$crim, breaks = bins, labels =
 table(crime)
 
 # remove original crim from the dataset and add in the new categorical one:
-boston_scaled <- select(boston_scaled, -crim)
-boston_scaled
+boston_scaled <- dplyr::select(boston_scaled, -crim)
 boston_scaled <- data.frame(boston_scaled, crime)
+glimpse(boston_scaled)
 ```
 
 Next, we will split the data set randomly to two sets, train and test, so that train consist of 80% randomly chosen observations, and test of the remaining data set. From train, we will also substract our categorical crime variable, 
