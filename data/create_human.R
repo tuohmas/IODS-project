@@ -59,30 +59,6 @@ str(human)
 
 # There are 195 observations (countries) and 19 variables
 
-# hdi_rank: ;
-# country: Country;
-# hdi:0 to 1);
-#  : ;
-#  : ;
-#  : ;
-#  gni_per_capita: Gross National Income (GNI) per capita;
-#  : ;
-#  : ;
-#  : ;
-#  : ;
-#  : ;
-#  : ;
-#  : ;
-#  : ;
-
-# the last 4 variables have been calculated by ourselves
-
-# : ;
-# :
-# : ; and
-# : .
-
-
 # GNI per capita column has been stored as a character object due to thousand
 # separator (,)
 str(human$gni_per_capita)
