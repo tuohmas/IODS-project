@@ -93,7 +93,7 @@ There is no clear cut way to interpret our two PCs. However, it seems that [UN d
 
 ## Multiple Correspondence Analysis
 
-For Multiple Correspondence Analysis we will explore tea data set. For futher meta data, see ?tea.
+For Multiple Correspondence Analysis we will explore tea data set. For futher meta data, see  ?tea.
 
 ```{r}
 # column names to keep in the dataset
