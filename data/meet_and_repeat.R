@@ -85,7 +85,7 @@ glimpse(RATSL)
 
 # Write data in long form local data repo and then push to Git
 write.table(BPRSL, "data/bprsl.csv", sep = ";", 
-            col.names = T, row.names = F)  
+            col.names = T, row.names = F)
 
 write.table(RATSL, "data/ratsl.csv", sep = ";", 
-            col.names = T, row.names = F)  
+            col.names = T, row.names = F) 
