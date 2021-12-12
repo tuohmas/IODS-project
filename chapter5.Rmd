@@ -1,9 +1,5 @@
 # Exercise 5, Week 5: Dimensionality reduction techniques
 
-```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
-```
-
 Dimensionality reduction techniques exercise is performed on previously merged "human" data set, read from GitHub repo. It consist of combined Human Development and Gender inequality data sets on country level. Description of original data can be found [here](http://hdr.undp.org/en/content/human-development-index-hdi) and [here](http://hdr.undp.org/sites/default/files/hdr2015_technical_notes.pdf), respectively.
 
 ```{r}
@@ -76,10 +72,6 @@ pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
 # draw a biplot of the principal component representation and the original variables
 biplot(pca_human, choices = 1:2, cex = c(0.5, 0.9),col = c("grey30", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2], main = "Prinicipal Component Analysis")
 
-
-#on standardized human data (combined HDI and GII)"
-?biplot
-
 ```
 For standardized human data, first PC captures much more believable proportion of total variance in data, about 54%, and together with PC2, about 70%. Including more than two PCs would benefit us only marginally as the total variance grows by less than ten per cent with each new dimensions we introduce.  
 
@@ -96,10 +88,13 @@ There is no clear cut way to interpret our two PCs. However, it seems that [UN d
 For Multiple Correspondence Analysis we will explore tea data set. For futher meta data, see  ?tea.
 
 ```{r}
+
 # column names to keep in the dataset
 library(FactoMineR)
+
+# load data set "tea"
 data("tea")
-tea
+glimpse(tea)
 
 keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch")
 
