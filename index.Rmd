@@ -3,12 +3,13 @@ title: "IODS course project"
 author: "Tuomas KJ Heikkilä"
 output:
   html_document:
-    theme: cosmo
+    theme: flatly
     toc: true
     toc_depth: 2
     fig_caption: true
-    fig_width: 6
-    fig_height: 4
+    fig_width: 8
+    fig_height: 8
+    dpi: 300
 ---
 
 ***
